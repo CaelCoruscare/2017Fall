@@ -1,4 +1,6 @@
 #[macro_use] extern crate text_io;
+extern crate rand;
+use rand::Rng;
 
 fn main()
 {
@@ -11,16 +13,18 @@ fn main()
     //testing
 }
 
-fn pvc_game()
+fn pvc_game(pieces: &[[char; 6]; 7])
 {
-    let m: i32;
+    let m: usize;
+    let mut rng = rand::thread_rng();
+
     loop
     {
-        printf!("Make your move.\n");
-        i = read!();
-        make_move('x', i, &mut piece);
-        i = rand::random(1,6);
-        make_move('o', i, &mut piece);
+        print!("Make your move.\n");
+        m = read!();
+        make_move('x', m, &mut pieces);
+        m = rng.gen::<usize>();
+        make_move('o', m, &mut pieces);
     }
 }
 
