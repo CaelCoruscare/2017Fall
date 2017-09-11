@@ -6,6 +6,7 @@ fn main()
     
     println!("Hi there");
     print_board();
+    //testing
 }
 
 fn print_board()
