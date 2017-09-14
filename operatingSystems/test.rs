@@ -8,7 +8,7 @@ fn main()
     print_board(&piece);
     make_move('o', 4, &mut piece);
     print_board(&piece);
-    //testing
+    //eufsekfhesu
 }
 
 fn pvc_game()
