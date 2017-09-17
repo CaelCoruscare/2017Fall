@@ -2,6 +2,10 @@
 extern crate rand;
 use rand::Rng;
 use rand::distributions::{IndependentSample, Range};
+use std::f32::INFINITY;
+
+static COMPPIECE: char = '0';
+static PLAYERPIECE: char = 'x';
 
 fn main()
 {
@@ -26,19 +30,42 @@ fn pvc_game(mut pieces: &mut[[char; 6]; 7])
         m = read!();
         make_move('x', m, &mut pieces);
         print_board(&pieces);
-        m = gen.ind_sample(&mut rng);
+        //m = gen.ind_sample(&mut rng);
+        //make_move('o', m, &mut pieces);
+        m = read!();
         make_move('o', m, &mut pieces);
         print_board(&pieces);
+        println!("Evaluation: {}", evaluate(&pieces));
     }
 }
 
 fn print_board(pieces: &[[char; 6]; 7])
 {
-    for y in (0..7).rev()
+    /*  Rows
+    |6|6|6|6|6|6|
+    |5|5|5|5|5|5|
+    |4|4|4|4|4|4|
+    |3|3|3|3|3|3|
+    |2|2|2|2|2|2|
+    |1|1|1|1|1|1|
+    |0|0|0|0|0|0|
+     1 2 3 4 5 6     */
+
+    /* Columns
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+    |0|1|2|3|4|5|
+     1 2 3 4 5 6    */
+
+    for row in (0..7).rev()
     {
-        for x in 0..6
+        for column in 0..6
         {
-            print!("|{}", pieces[y][x]);
+            print!("|{}", pieces[row][column]);
         }
         print!("|\n");
     }
@@ -58,9 +85,105 @@ fn make_move(piece: char, spot: usize, pieces: &mut [[char; 6]; 7])
             break;
         }
     }
+}
 
-    fn ai_move(pieces: [[char; 6]; 7])
+#[allow(dead_code)]
+fn ai_move(pieces: [[char; 6]; 7])->i32
+{
+    3
+}
+
+#[allow(dead_code)]
+fn max(depth: i32, pieces: [[char; 6]; 7])->i32
+{
+    let best: i32 = INFINITY as i32;
+
+    if depth <= 0 
+        {return evaluate(&pieces);}
+    
+    generate_legal_moves(pieces);
+
+
+    best
+}
+
+#[allow(dead_code)]
+fn minmax(depth: i32, pieces: [[char; 6]; 7])->i32
+{
+    3
+}
+
+fn evaluate(pieces: &[[char; 6]; 7])->i32
+{
+    //For Friendly: +128 for 4 in a row. 
+    //+8 for 3 in a row with open. 
+    //+2 for 2 in a row with open.
+
+    //pieces is an array of 7 rows of 6   
+
+    let mut score = 0;
+
+    for row in 0..7
     {
-        
+        for mut column in 0..6
+        {
+            //println!("Row: {} Column: {}", row, column);
+            if pieces[row][column] == 'o'
+            {
+                //if (column == )
+                println!("found a o!");
+                let mut in_a_row = 1;
+                let mut empty_sides = 
+                    if column == 0 || pieces[row][column-1] == 'x'
+                    {
+                        0
+                    }
+                    else{
+                        1
+                    }
+                    ;
+
+                'test: for j in (column+1)..6
+                {
+                    column+=1;
+                    match pieces[row][column]
+                    {
+                        //computer
+                        'o' => in_a_row+=1,
+
+                        //player
+                        'x' => break 'test,
+                        
+                        //empty
+                        ' ' => {empty_sides+=1;
+                            break 'test},
+
+                        _ => println!("wtf")
+                    }
+                }
+                println!("in_a_row: {} empty_sides: {}", in_a_row, empty_sides);
+                score += in_a_row * empty_sides;
+            }
+        }
     }
+
+score
+
+}
+
+//return array with all spots that can be played
+fn generate_legal_moves(pieces: [[char; 6]; 7])->[bool; 7]
+{
+        
+    let mut x: [bool; 7] = [false; 7];
+
+    for i in 0..6
+    {
+        if (pieces[6][i]) == ' '
+        {
+            x[i] = true;
+        }
+    }
+
+    x
 }
