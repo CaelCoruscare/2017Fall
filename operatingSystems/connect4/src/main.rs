@@ -113,6 +113,78 @@ fn minmax(depth: i32, pieces: [[char; 6]; 7])->i32
     3
 }
 
+fn evaluatev2(pieces: &[[char; 6]; 7])->i32
+{
+    let mut score = 0;
+    let mut in_a_row = 0;
+    let mut empty_sides = 0;
+
+    for row in 0..7
+    {
+        for column in 0..6
+        {
+            if pieces[row][column] == 'o'
+            {
+                //3-4:30-6- 7:30-9-10:30-12
+
+                //3:00
+                for column_spot in column..6
+                {
+                    
+                }
+            }
+        }
+    }
+
+    let eval1 = |piece|
+    {
+    //in_a_row, empty_sides, score
+        match piece
+        {
+            //computer
+            'o' => in_a_row += 1,
+
+            //player
+            'x' => 
+            {
+                if in_a_row.is_positive() && empty_sides.is_positive()
+                { 
+                    score += in_a_row * empty_sides;
+                    in_a_row = 0;
+                }
+                empty_sides = 0;
+            },        
+
+            //empty
+            ' ' => 
+            {
+                //TODO: Check if this is a gap. Also make scoring exponential.
+
+                if in_a_row.is_positive()
+                {
+                    if column == 5 || pieces[row][column+1] != 'o'
+                    {
+                        empty_sides += 1;
+                        score += in_a_row * empty_sides;
+                        in_a_row = 0;
+                    }
+                }
+                else{
+                    empty_sides = 1; 
+                }
+                
+            },
+
+            _ => println!("wtf")
+        }
+    }; //end eval1
+    3
+}
+
+
+
+
+
 fn evaluate(pieces: &[[char; 6]; 7])->i32
 {
     //For Friendly: +128 for 4 in a row. 
@@ -121,50 +193,59 @@ fn evaluate(pieces: &[[char; 6]; 7])->i32
 
     //pieces is an array of 7 rows of 6   
 
-    let mut score = 0;
+    let mut score: i32 = 0;
+    let mut in_a_row: i32 = 0;
+    let mut empty_sides: i32 = 0;
 
     for row in 0..7
     {
-        for mut column in 0..6
+        for column in 0..6
         {
-            //println!("Row: {} Column: {}", row, column);
-            if pieces[row][column] == 'o'
+            match pieces[row][column]
             {
-                //if (column == )
-                println!("found a o!");
-                let mut in_a_row = 1;
-                let mut empty_sides = 
-                    if column == 0 || pieces[row][column-1] == 'x'
-                    {
-                        0
-                    }
-                    else{
-                        1
-                    }
-                    ;
+                //computer
+                'o' => in_a_row+=1,
 
-                'test: for j in (column+1)..6
+                //player
+                'x' => 
                 {
-                    column+=1;
-                    match pieces[row][column]
-                    {
-                        //computer
-                        'o' => in_a_row+=1,
-
-                        //player
-                        'x' => break 'test,
-                        
-                        //empty
-                        ' ' => {empty_sides+=1;
-                            break 'test},
-
-                        _ => println!("wtf")
+                    if in_a_row.is_positive() && empty_sides.is_positive()
+                    { 
+                        score += in_a_row * empty_sides;
+                        in_a_row = 0;
                     }
-                }
-                println!("in_a_row: {} empty_sides: {}", in_a_row, empty_sides);
-                score += in_a_row * empty_sides;
+                    empty_sides = 0;
+                },
+                
+                //empty
+                ' ' => 
+                {
+                    //TODO: Check if this is a gap. Also make scoring exponential.
+
+                    if in_a_row.is_positive()
+                    {
+                        if column == 5 || pieces[row][column+1] != 'o'
+                        {
+                            empty_sides += 1;
+                            score += in_a_row * empty_sides;
+                            in_a_row = 0;
+                        }
+                    }
+                    empty_sides = 1;
+                },
+
+                _ => println!("wtf")
             }
         }
+
+        if in_a_row.is_positive() && empty_sides.is_positive()
+        {
+            if in_a_row == 4 { score = 128 }
+            score += in_a_row * empty_sides;
+        }
+
+        in_a_row = 0;
+        empty_sides = 0;
     }
 
 score
