@@ -4,8 +4,6 @@ use rand::Rng;
 use rand::distributions::{IndependentSample, Range};
 use std::f32::INFINITY;
 
-static COMPPIECE: char = '0';
-static PLAYERPIECE: char = 'x';
 
 fn main()
 {
@@ -115,9 +113,47 @@ fn minmax(depth: i32, pieces: [[char; 6]; 7])->i32
 
 fn evaluatev2(pieces: &[[char; 6]; 7])->i32
 {
-    let mut score = 0;
+    let mut score = 0; //TODO: test declaring in one statement
     let mut in_a_row = 0;
     let mut empty_sides = 0;
+    let mut previous_was_empty = false;
+
+    let add1_closure = |x| x+=1;
+
+    add1_closure(s);
+
+    let eval1 = |piece|
+    {
+    //in_a_row, empty_sides, score
+        match piece
+        {
+            //computer
+            'o' => 
+            {
+                in_a_row += 1;
+                previous_was_empty = false;
+            },
+
+            //player
+            'x' => 
+            {
+                score += in_a_row * empty_sides;
+                in_a_row = 0;
+                empty_sides = 0;
+                previous_was_empty = false;
+            },        
+
+            //empty
+            ' ' => 
+            {
+                if !previous_was_empty { empty_sides += 1; }
+                previous_was_empty = true;
+            },
+
+            //should never be reached
+            _ => println!("wtf")
+        }
+    }; //end eval1
 
     for row in 0..7
     {
@@ -130,54 +166,13 @@ fn evaluatev2(pieces: &[[char; 6]; 7])->i32
                 //3:00
                 for column_spot in column..6
                 {
-                    
+                    eval1(pieces[row][column_spot]);
                 }
             }
         }
     }
 
-    let eval1 = |piece|
-    {
-    //in_a_row, empty_sides, score
-        match piece
-        {
-            //computer
-            'o' => in_a_row += 1,
-
-            //player
-            'x' => 
-            {
-                if in_a_row.is_positive() && empty_sides.is_positive()
-                { 
-                    score += in_a_row * empty_sides;
-                    in_a_row = 0;
-                }
-                empty_sides = 0;
-            },        
-
-            //empty
-            ' ' => 
-            {
-                //TODO: Check if this is a gap. Also make scoring exponential.
-
-                if in_a_row.is_positive()
-                {
-                    if column == 5 || pieces[row][column+1] != 'o'
-                    {
-                        empty_sides += 1;
-                        score += in_a_row * empty_sides;
-                        in_a_row = 0;
-                    }
-                }
-                else{
-                    empty_sides = 1; 
-                }
-                
-            },
-
-            _ => println!("wtf")
-        }
-    }; //end eval1
+   
     3
 }
 
