@@ -10,10 +10,32 @@ fn main()
     let mut pieces: [[char; 6]; 7] = [[' '; 6]; 7];
 
     println!("Hi there");
-    pvc_game(&mut pieces);
+    //pvc_game(&mut pieces);
+    pvc_rand_game(&mut pieces);
     //testing
 }
 
+fn pvc_rand_game(mut pieces: &mut[[char; 6]; 7])
+{
+    let mut m: usize;
+    let mut rng = rand::thread_rng();
+    let gen = Range::new(1, 7);
+
+    print_board(&pieces);
+
+    loop
+    {
+        print!("Make your move.\n");
+        m = read!();
+        make_move('x', m, &mut pieces);
+        print_board(&pieces);
+        m = gen.ind_sample(&mut rng);
+        make_move('o', m, &mut pieces);
+        print_board(&pieces);
+    }
+}
+
+#[allow(dead_code)]
 fn pvc_game(mut pieces: &mut[[char; 6]; 7])
 {
     let mut m: usize;
@@ -33,7 +55,7 @@ fn pvc_game(mut pieces: &mut[[char; 6]; 7])
         m = read!();
         make_move('o', m, &mut pieces);
         print_board(&pieces);
-        println!("Evaluation: {}", evaluate(&pieces));
+        println!("Evaluation: {}", evaluatev2(&pieces));
     }
 }
 
@@ -111,6 +133,7 @@ fn minmax(depth: i32, pieces: [[char; 6]; 7])->i32
     3
 }
 
+#[allow(dead_code)]
 fn evaluatev2(pieces: &[[char; 6]; 7])->i32
 {
     let mut score = 0; //TODO: test declaring in one statement
@@ -118,11 +141,8 @@ fn evaluatev2(pieces: &[[char; 6]; 7])->i32
     let mut empty_sides = 0;
     let mut previous_was_empty = false;
 
-    let add1_closure = |x| x+=1;
-
-    add1_closure(s);
-
-    let eval1 = |piece|
+    {
+    let mut eval1 = |piece|
     {
     //in_a_row, empty_sides, score
         match piece
@@ -153,6 +173,7 @@ fn evaluatev2(pieces: &[[char; 6]; 7])->i32
             //should never be reached
             _ => println!("wtf")
         }
+        println!("3:00 -- {}", score);
     }; //end eval1
 
     for row in 0..7
@@ -168,12 +189,45 @@ fn evaluatev2(pieces: &[[char; 6]; 7])->i32
                 {
                     eval1(pieces[row][column_spot]);
                 }
+                println!("3:00 done");
+
+                //4:30
+                
+
+                //6:00
+                for row_spot in (0..row).rev()
+                {
+                    eval1(pieces[row_spot][column]);
+                }
+                println!("6:00 done");
+
+                //7:30
+
+
+                //9:00
+                for column_spot in (0..column).rev()
+                {
+                    eval1(pieces[row][column_spot]);
+                }
+                println!("9:00 done");
+
+                //10:30
+
+
+                //12:00
+                for row_spot in row..7
+                {
+                    eval1(pieces[row_spot][column]);
+                }
+                println!("12:00 done");
+
+                //1:30
             }
         }
     }
-
-   
-    3
+    }//End of scope where score is mutably borrowed by eval1
+    score
+    
 }
 
 
@@ -244,7 +298,6 @@ fn evaluate(pieces: &[[char; 6]; 7])->i32
     }
 
 score
-
 }
 
 //return array with all spots that can be played
